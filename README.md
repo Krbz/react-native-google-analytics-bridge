@@ -204,31 +204,31 @@ GoogleTagManager.registerFunctionCallTagHandler(
         -   [Parameters](#parameters-23)
     -   [setVerboseLoggingEnabled](#setverboseloggingenabled)
         -   [Parameters](#parameters-24)
--   [TimingMetadata](#timingmetadata)
+-   [HitPayload](#hitpayload)
     -   [Parameters](#parameters-25)
     -   [Examples](#examples-27)
 -   [EventMetadata](#eventmetadata)
     -   [Parameters](#parameters-26)
     -   [Examples](#examples-28)
--   [HitPayload](#hitpayload)
+-   [TimingMetadata](#timingmetadata)
     -   [Parameters](#parameters-27)
     -   [Examples](#examples-29)
--   [CustomDimensionsByField](#customdimensionsbyfield)
+-   [CustomMetrics](#custommetrics)
     -   [Examples](#examples-30)
 -   [CustomDimensionsByIndex](#customdimensionsbyindex)
     -   [Examples](#examples-31)
--   [CustomDimensionsFieldIndexMap](#customdimensionsfieldindexmap)
+-   [CustomDimensionsByField](#customdimensionsbyfield)
     -   [Examples](#examples-32)
--   [CustomMetrics](#custommetrics)
+-   [CustomDimensionsFieldIndexMap](#customdimensionsfieldindexmap)
     -   [Examples](#examples-33)
 -   [DataLayerEvent](#datalayerevent)
     -   [Parameters](#parameters-28)
     -   [Examples](#examples-34)
 -   [ProductActionEnum](#productactionenum)
--   [Product](#product)
+-   [ProductAction](#productaction)
     -   [Parameters](#parameters-29)
     -   [Examples](#examples-35)
--   [ProductAction](#productaction)
+-   [Product](#product)
     -   [Parameters](#parameters-30)
     -   [Examples](#examples-36)
 -   [Transaction](#transaction)
@@ -738,38 +738,6 @@ Sets logger to verbose, default is warning
 
 -   `enabled` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
 
-### TimingMetadata
-
-Used when tracking time measurements
-
-#### Parameters
-
--   `name` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** (Required)
--   `label` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** (Optional)
-
-#### Examples
-
-```javascript
-const timingMetadata = { name: "LoadList" } // name is a required value when tracking timing
-tracker.trackTiming("testcategory", 13000, timingMetadata);
-```
-
-### EventMetadata
-
-Used when tracking event
-
-#### Parameters
-
--   `label` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** (Optional)
--   `value` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** (Optional)
-
-#### Examples
-
-```javascript
-const eventMetadata = { label: "v1.0.3", value: 22 }
-tracker.trackEvent("FinalizeOrderButton", "Click", eventMetadata);
-```
-
 ### HitPayload
 
 The HitPayload object and possible values
@@ -828,20 +796,47 @@ const payload = { customDimensions };
 tracker.trackScreenView("SaleScreen", payload);
 ```
 
-### CustomDimensionsByField
+### EventMetadata
 
--   **See: CustomDimensionsFieldIndexMap**
--   **See: CustomDimensionsByIndex**
+Used when tracking event
 
-A dictionary with custom dimensions values and their (mapped) field name keys.
-In order to use this and send in custom dimensions by field name, you must have
-provided a `CustomDimensionsFieldIndexMap` when constructing the tracker.
+#### Parameters
+
+-   `label` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** (Optional)
+-   `value` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** (Optional)
 
 #### Examples
 
 ```javascript
-const customDimensions = { customerType: "Premium", appType: "Beta", credit: 1200 }
-tracker.trackScreenView("Home", { customDimensions });
+const eventMetadata = { label: "v1.0.3", value: 22 }
+tracker.trackEvent("FinalizeOrderButton", "Click", eventMetadata);
+```
+
+### TimingMetadata
+
+Used when tracking time measurements
+
+#### Parameters
+
+-   `name` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** (Required)
+-   `label` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** (Optional)
+
+#### Examples
+
+```javascript
+const timingMetadata = { name: "LoadList" } // name is a required value when tracking timing
+tracker.trackTiming("testcategory", 13000, timingMetadata);
+```
+
+### CustomMetrics
+
+A dictionary with custom metric values and their index keys.
+
+#### Examples
+
+```javascript
+const customMetrics = { 1: 2389, 4: 15000 }
+tracker.trackScreenView("Home", { customMetrics });
 ```
 
 ### CustomDimensionsByIndex
@@ -855,6 +850,22 @@ A dictionary with custom dimensions values and their index keys.
 
 ```javascript
 const customDimensions = { 1: "Premium", 3: "Beta", 5: 1200 }
+tracker.trackScreenView("Home", { customDimensions });
+```
+
+### CustomDimensionsByField
+
+-   **See: CustomDimensionsFieldIndexMap**
+-   **See: CustomDimensionsByIndex**
+
+A dictionary with custom dimensions values and their (mapped) field name keys.
+In order to use this and send in custom dimensions by field name, you must have
+provided a `CustomDimensionsFieldIndexMap` when constructing the tracker.
+
+#### Examples
+
+```javascript
+const customDimensions = { customerType: "Premium", appType: "Beta", credit: 1200 }
 tracker.trackScreenView("Home", { customDimensions });
 ```
 
@@ -877,17 +888,6 @@ const tracker = new GoogleAnalyticsTracker("UA-12345-3", fieldIndexMap);
 tracker.trackScreenView("Home", { customDimensions: { customerType: "Premium" } });
 // If you do not provide a map, you instead have to send in by index:
 tracker.trackScreenView("Home", { customDimensions: { 1: "Premium" } });
-```
-
-### CustomMetrics
-
-A dictionary with custom metric values and their index keys.
-
-#### Examples
-
-```javascript
-const customMetrics = { 1: 2389, 4: 15000 }
-tracker.trackScreenView("Home", { customMetrics });
 ```
 
 ### DataLayerEvent
@@ -925,6 +925,36 @@ Used by `ProductAction` when describing the type of product action. The possible
 -   Purchase = 7,
 -   Refund = 8
 
+### ProductAction
+
+Enhanced Ecommerce Product Action
+
+Used by `HitPayload` when describing a product action
+
+#### Parameters
+
+-   `action` **[ProductActionEnum](#productactionenum)** 
+-   `transaction` **[Transaction](#transaction)** (Optional)
+-   `checkoutStep` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** (Optional)
+-   `checkoutOption` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** (Optional)
+-   `productActionList` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** (Optional)
+-   `productListSource` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** (Optional)
+
+#### Examples
+
+```javascript
+const productAction = {
+  transaction,
+  action: 7 // Purchase action, see ProductActionEnum
+}
+```
+
+```javascript
+const productAction = {
+  action: 3 // Add action, see ProductActionEnum
+}
+```
+
 ### Product
 
 Enhanced Ecommerce Product
@@ -955,36 +985,6 @@ const product = {
   quantity: 1,
   couponCode: "APPARELSALE"
 };
-```
-
-### ProductAction
-
-Enhanced Ecommerce Product Action
-
-Used by `HitPayload` when describing a product action
-
-#### Parameters
-
--   `action` **[ProductActionEnum](#productactionenum)** 
--   `transaction` **[Transaction](#transaction)** (Optional)
--   `checkoutStep` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** (Optional)
--   `checkoutOption` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** (Optional)
--   `productActionList` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** (Optional)
--   `productListSource` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** (Optional)
-
-#### Examples
-
-```javascript
-const productAction = {
-  transaction,
-  action: 7 // Purchase action, see ProductActionEnum
-}
-```
-
-```javascript
-const productAction = {
-  action: 3 // Add action, see ProductActionEnum
-}
 ```
 
 ### Transaction
